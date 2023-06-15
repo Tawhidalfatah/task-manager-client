@@ -1,15 +1,33 @@
+import { useContext } from "react";
 import { useForm } from "react-hook-form";
+import { AuthContext } from "../../Providers/AuthProvider";
+import { useNavigate } from "react-router-dom";
 
 const AddTask = () => {
+  const { user } = useContext(AuthContext);
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
   } = useForm();
+  const navigate = useNavigate();
   const onSubmit = (data) => {
+    data.email = user.email;
+    if (!user) {
+      return navigate("/login");
+    }
+    fetch("http://localhost:5000/addtask", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((res) => res.json())
+      .then((data) => console.log(data))
+      .catch((err) => console.log(err));
     reset();
-    console.log(data);
   };
   console.log(errors);
 
@@ -21,14 +39,14 @@ const AddTask = () => {
             type="text"
             className="input input-bordered input-primary w-full"
             placeholder="Task Name"
-            {...register("Task Name", { required: true })}
+            {...register("task", { required: true })}
           />
         </div>
         <div className="flex justify-center my-5">
           <textarea
             placeholder="Task Description"
             className="textarea textarea-primary"
-            {...register("Task Description", { required: true })}
+            {...register("description", { required: true })}
           />
         </div>
         <div className="flex w-full justify-center items-center gap-2 my-2">
@@ -37,7 +55,7 @@ const AddTask = () => {
           </label>
           <select
             className="select select-bordered select-primary w-full"
-            {...register("Status", { required: true })}
+            {...register("status", { required: true })}
           >
             <option value="completed">Completed</option>
             <option value="ongoing">Ongoing</option>
@@ -54,7 +72,7 @@ const AddTask = () => {
               <span className="label-text mr-2">Low</span>
               <input
                 className="radio radio-primary"
-                {...register("Priority")}
+                {...register("priority")}
                 type="radio"
                 value="low"
               />
@@ -65,7 +83,7 @@ const AddTask = () => {
               <span className="label-text mr-2">Medium</span>
               <input
                 className="radio radio-warning"
-                {...register("Priority")}
+                {...register("priority")}
                 type="radio"
                 value="medium"
               />
@@ -76,7 +94,7 @@ const AddTask = () => {
               <span className="label-text mr-2">High</span>
               <input
                 className="radio radio-error"
-                {...register("Priority")}
+                {...register("priority")}
                 type="radio"
                 value="high"
               />
