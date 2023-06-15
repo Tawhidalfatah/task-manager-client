@@ -12,7 +12,7 @@ const Banner = () => {
             Get started to add your tasks and as well as edit them.
           </p>
           <Link to="/addtask">
-            <button className="btn btn-primary">Get Started</button>
+            <button className="btn btn-primary">Add Task</button>
           </Link>
         </div>
       </div>

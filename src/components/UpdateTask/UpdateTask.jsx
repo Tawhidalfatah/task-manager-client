@@ -1,44 +1,33 @@
-import { useContext } from "react";
+import axios from "axios";
 import { useForm } from "react-hook-form";
-import { AuthContext } from "../../Providers/AuthProvider";
-import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
+import { useNavigate, useParams } from "react-router-dom";
 
-const AddTask = () => {
-  const { user } = useContext(AuthContext);
+const UpdateTask = () => {
+  const paramsId = useParams();
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
-    reset,
-    formState: { errors },
+    // reset,
+    // formState: { errors },
   } = useForm();
-  const navigate = useNavigate();
   const onSubmit = (data) => {
-    data.email = user.email;
-    if (!user) {
-      toast.error("Login First");
-      return navigate("/login");
-    }
-    fetch("https://task-manager-production-145d.up.railway.app/addtask", {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.insertedId) {
-          toast.success("Task added");
+    axios
+      .put(
+        `https://task-manager-production-145d.up.railway.app/updatetask/${paramsId.id}`,
+        data
+      )
+      .then((res) => {
+        if (res.data.modifiedCount > 0) {
+          toast.success("Task Updated");
           navigate("/alltasks");
         }
-        console.log(data);
       })
       .catch((err) => console.log(err));
-    reset();
+    console.log(data);
   };
-  console.log(errors);
-
   return (
     <div className="mt-48 flex flex-col items-center">
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -114,7 +103,7 @@ const AddTask = () => {
           <input
             className="btn btn-primary text-xl"
             type="submit"
-            value="Add"
+            value="Update"
           />
         </div>
       </form>
@@ -122,4 +111,4 @@ const AddTask = () => {
   );
 };
 
-export default AddTask;
+export default UpdateTask;
